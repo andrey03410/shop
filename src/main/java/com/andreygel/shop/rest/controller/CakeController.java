@@ -2,6 +2,7 @@ package com.andreygel.shop.rest.controller;
 
 import com.andreygel.shop.goods.CakesServiceImpl;
 import com.andreygel.shop.rest.dto.Cake;
+import com.andreygel.shop.rest.dto.CakeDetail;
 import com.andreygel.shop.rest.dto.Cakes;
 import com.andreygel.shop.exception.CakeNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +61,8 @@ public class CakeController {
     }
 
     @GetMapping(value = "cake/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Cake getCakeById(@PathVariable Long id) {
-        return cakeList.getCakeList().stream()
-                .filter(c -> c.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new CakeNotFoundException("No such cake"));
+    public CakeDetail getCakeById(@PathVariable Long id) {
+        return cakesService.getCake(id);
     }
 
     @PostMapping(path = "cakes", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

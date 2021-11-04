@@ -1,6 +1,8 @@
 package com.andreygel.shop.goods;
 
+import com.andreygel.shop.exception.CakeNotFoundException;
 import com.andreygel.shop.rest.dto.Cake;
+import com.andreygel.shop.rest.dto.CakeDetail;
 import com.andreygel.shop.rest.dto.Cakes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +36,23 @@ public class CakesServiceImpl implements CakesService {
         Cakes cakes = new Cakes();
         cakes.setCakeList(cakeList);
         return cakes;
+    }
+
+    @Override
+    public CakeDetail getCake(Long id) {
+        return  cakeRepository.findById(id)
+                .map(cakeEntity -> {
+                    CakeDetail cake = new CakeDetail();
+                    cake.setId(cakeEntity.getId());
+                    cake.setCalories(cakeEntity.getCalories());
+                    cake.setName(cakeEntity.getName());
+                    cake.setImage(cakeEntity.getImage());
+                    cake.setPrice(cakeEntity.getPrice());
+                    cake.setWeight(cakeEntity.getWeight());
+                    cake.setDescription(cakeEntity.getDescription());
+                    cake.setShelfLife(cakeEntity.getShelfLife());
+                    return cake;
+                })
+                .orElseThrow(() -> new CakeNotFoundException("No such cake"));
     }
 }

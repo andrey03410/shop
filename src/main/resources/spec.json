@@ -112,7 +112,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Cake"
+                  "$ref": "#/components/schemas/CakeDetail"
                 }
               }
             }
@@ -126,7 +126,6 @@
       "Cake": {
         "required": [
           "calories",
-          "id",
           "image",
           "name",
           "price",
@@ -134,9 +133,6 @@
         ],
         "type": "object",
         "properties": {
-          "full": {
-            "type": "boolean"
-          },
           "id": {
             "type": "integer",
             "description": "id",
@@ -179,6 +175,54 @@
             }
           }
         }
+      },
+      "CakeDetail": {
+        "required": [
+          "calories",
+          "description",
+          "image",
+          "name",
+          "price",
+          "shelfLife",
+          "weight"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "id",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name"
+          },
+          "calories": {
+            "type": "number",
+            "description": "Calories of cake"
+          },
+          "image": {
+            "type": "string",
+            "description": "Relative url of cake image"
+          },
+          "price": {
+            "type": "number",
+            "description": "Price of cake"
+          },
+          "weight": {
+            "type": "number",
+            "description": "Cake weight"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detail description"
+          },
+          "shelfLife": {
+            "type": "number",
+            "description": "Shelf life of the cake (days)"
+          }
+        },
+        "description": "Detail info about cake"
       }
     }
   }
