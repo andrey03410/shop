@@ -16,6 +16,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Table(name = "CAKE")
+public
 class CakeEntity {
 
     @Setter(AccessLevel.NONE)
