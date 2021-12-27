@@ -1,14 +1,20 @@
 package com.andreygel.shop.orders;
 
+import com.andreygel.shop.exception.OrderNotFoundException;
 import com.andreygel.shop.goods.CakeRepository;
 import com.andreygel.shop.rest.dto.Order;
+import com.andreygel.shop.rest.dto.OrderModel;
+import com.andreygel.shop.rest.dto.PurchaseModel;
 import com.andreygel.shop.users.UserRepository;
 import com.andreygel.shop.users.UserService;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,5 +54,65 @@ public class OrderServiceImpl implements OrderService{
                 }).collect(Collectors.toList()));
         orderEntity.setUser(userRepository.findUserEntityByNumber(order.getUser().getNumber()));
         orderRepository.saveAndFlush(orderEntity);
+    }
+
+    public List<OrderModel> getOrders() {
+        List<OrderEntity> orderEntities = orderRepository.findAll();
+        return orderEntities.stream().map(or -> {
+            OrderModel order = new OrderModel();
+            order.setId(or.getId());
+            order.setName(or.getUser().getName());
+            order.setNumber(or.getUser().getNumber());
+            order.setDelivery(or.getDelivery());
+            order.setPayment(or.getPayment());
+            order.setOrderStatus(or.getStatus());
+            return order;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void changeOrderStatus(Long id, OrderStatus status) {
+        orderRepository.updateStatus(id,status);
+    }
+
+    @Override
+    public void deleteOrder(Long id) {
+        orderRepository.deleteById(id);
+    }
+
+    @Override
+    public OrderModel getOrder(Long id) {
+        return orderRepository.findById(id)
+                .map(orderEntity -> {
+                    OrderModel order = new OrderModel();
+                    order.setOrderStatus(orderEntity.getStatus());
+                    order.setId(orderEntity.getId());
+                    order.setName(orderEntity.getUser().getName());
+                    order.setNumber(orderEntity.getUser().getNumber());
+                    order.setDelivery(orderEntity.getDelivery());
+                    order.setDeliveryAddress(orderEntity.getDeliveryAddress());
+                    order.setDeliveryTime(orderEntity.getDeliveryTime());
+
+                    List<PurchaseModel> purchaseModelList = orderEntity.getPurchases().stream().map(purchase -> {
+                                PurchaseModel cakeInOrderInfo = cakeRepository.findById(purchase.getCake().getId()).map(
+                                        cakeEntity -> {
+                                            PurchaseModel purchaseModel = new PurchaseModel();
+                                            purchaseModel.setName(cakeEntity.getName());
+                                            purchaseModel.setPrice(cakeEntity.getPrice());
+                                            return purchaseModel;
+                                        }
+                                ).orElse(new PurchaseModel());
+                                cakeInOrderInfo.setNumber(purchase.getNumber());
+                                return cakeInOrderInfo;
+                            }
+                    ).collect(Collectors.toList());
+
+
+                    order.setPurchaseList(purchaseModelList);
+                    order.setPayment(orderEntity.getPayment());
+                    return order;
+                })
+                .orElseThrow(() -> new OrderNotFoundException("No such order"));
+
     }
 }

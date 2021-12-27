@@ -62,7 +62,7 @@ public class CakesServiceImpl implements CakesService {
     }
 
     @Override
-    public void addCake(CakeDetail cake){
+    public Long addCake(CakeDetail cake){
         CakeEntity cakeEntity = new CakeEntity();
         cakeEntity.setCalories(cake.getCalories());
         cakeEntity.setImage(cake.getImage());
@@ -72,5 +72,12 @@ public class CakesServiceImpl implements CakesService {
         cakeEntity.setWeight(cake.getWeight());
         cakeEntity.setShelfLife(cake.getShelfLife());
         cakeRepository.save(cakeEntity);
+        return cakeEntity.getId();
+    }
+
+    @Override
+    public void deleteCake(Long id) {
+        CakeEntity cake = cakeRepository.getById(id);
+        cakeRepository.delete(cake);
     }
 }

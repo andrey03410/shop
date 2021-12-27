@@ -18,6 +18,10 @@ import java.util.List;
 @Schema(description = "Info about order")
 @Validated
 public class Order {
+    @Null
+    @Schema(description = "id", required = false)
+    @JsonProperty("id")
+    private Long id;
 
     @NotNull
     @Schema(description = "user info ", required = true)
